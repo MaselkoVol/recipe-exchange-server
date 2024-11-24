@@ -1,0 +1,8 @@
+node_modules
+
+# Ignore .env in both client and server
+.env
+
+# Optional: Ignore build artifacts or other generated files
+**/dist
+**/build

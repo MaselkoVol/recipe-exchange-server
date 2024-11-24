@@ -1,0 +1,158 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String           @id @default(uuid())
+  name             String
+  email            String           @unique
+  isAdmin          Boolean          @default(false)
+  password         String
+  refreshToken     String?          @unique
+  avatarUrl        String
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  // relation to Recipe table
+  recipes          Recipe[]
+  // relation to Follows table
+  following        Follows[]        @relation("following")
+  followers        Follows[]        @relation("followers")
+  // relation to Message table
+  sentMessages     Message[]        @relation("senders")
+  receivedMessages Message[]        @relation("receivers")
+  // relation to FavoriteRecipe table
+  favoriteRecipes  FavoriteRecipe[]
+  // relation to LikedRecipe table
+  likedReicpes     LikedRecipe[]
+  // relation to RecipeComment table
+  recipeCommnets   RecipeComment[]
+  viewedRecipes    RecipeView[]
+}
+
+model Recipe {
+  id              String           @id @default(uuid())
+  author          User             @relation(fields: [authorId], references: [id])
+  authorId        String
+  title           String
+  text            String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  ingredients     String
+  views           RecipeView[]
+  // relation many to may with RecipeTag table
+  tags            RecipeTag[]
+  // relation to FavoriteRecipe table
+  favoriteRecipes FavoriteRecipe[]
+  // relation to LikedRecipe table
+  likes           LikedRecipe[]
+  // relation to RecipeComment table
+  comments        RecipeComment[]
+  // relation to RecipeImage table
+  mainImageUrl    String?
+  images          RecipeImage[]
+}
+
+model RecipeTag {
+  id            String            @id @default(uuid())
+  tagCategory   RecipeTagCategory @relation(fields: [tagCategoryId], references: [id])
+  tagCategoryId String
+  name          String            @unique
+  recipes       Recipe[]
+}
+
+model RecipeTagCategory {
+  id   String      @id @default(uuid())
+  name String      @unique
+  tags RecipeTag[]
+}
+
+// Represents user follow another user
+model Follows {
+  id          String   @id @default(uuid())
+  follower    User     @relation("followers", fields: [followerId], references: [id])
+  followerId  String
+  following   User     @relation("following", fields: [followingId], references: [id])
+  followingId String
+  createdAt   DateTime @default(now())
+}
+
+// Represents messages between two people
+model Message {
+  id         String   @id @default(uuid())
+  text       String
+  received   Boolean  @default(false)
+  read       Boolean  @default(false)
+  sender     User     @relation("senders", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User     @relation("receivers", fields: [receiverId], references: [id])
+  receiverId String
+  createdAt  DateTime @default(now())
+}
+
+// Represents user's favorite recipes
+model FavoriteRecipe {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  String
+  createdAt DateTime @default(now())
+}
+
+model RecipeView {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  String
+  createdAt DateTime @default(now())
+}
+
+// Represents user's liked recipes
+model LikedRecipe {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  String
+  createdAt DateTime @default(now())
+}
+
+// Represents comments about recipes written by users
+model RecipeComment {
+  id        String               @id @default(uuid())
+  user      User                 @relation(fields: [userId], references: [id])
+  userId    String
+  recipe    Recipe               @relation(fields: [recipeId], references: [id])
+  recipeId  String
+  rating    Int                  @default(0)
+  text      String
+  images    RecipeCommentImage[]
+  createdAt DateTime             @default(now())
+}
+
+model RecipeCommentImage {
+  id              String        @id @default(uuid())
+  recipeComment   RecipeComment @relation(fields: [recipeCommentId], references: [id])
+  recipeCommentId String
+  imageUrl        String
+}
+
+// Represents images the user attached to the recipe
+model RecipeImage {
+  id       String @id @default(uuid())
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+  recipeId String
+  imageUrl String
+}
