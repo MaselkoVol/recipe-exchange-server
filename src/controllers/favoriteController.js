@@ -45,7 +45,6 @@ const FavoriteController = {
           },
         },
       });
-      console.log(favoriteRecipes);
 
       favoriteRecipes = favoriteRecipes.map((favoriteRecipe) => {
         const recipe = favoriteRecipe.recipe;

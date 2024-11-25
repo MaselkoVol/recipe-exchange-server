@@ -130,7 +130,6 @@ const CurrentController = {
   updateUser: async (req, res) => {
     const { name } = req.body;
     const userId = req.user.id;
-    console.log(name);
 
     let avatar = null;
     if (req.file) {
@@ -148,7 +147,6 @@ const CurrentController = {
       // soft delete of files
       const deleteTransaction = createDeleteTransaction();
       if (avatar && user.avatarUrl) {
-        console.log(user.avatarUrl);
         deleteTransaction.add(getFilePath("public", "uploads", "current", user.avatarUrl));
         filename = avatar.filename;
       }

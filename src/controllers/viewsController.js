@@ -5,7 +5,6 @@ const ViewsController = {
   addView: async (req, res) => {
     const { recipeId } = req.params;
     const userId = req.user.id;
-    console.log("first");
     try {
       const foundRecipe = await prisma.recipe.findFirst({ where: { id: recipeId } });
       if (!foundRecipe) {
