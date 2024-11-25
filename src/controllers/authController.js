@@ -92,6 +92,7 @@ const AuthController = {
   // @route		POST /api/auth/refresh
   refresh: async (req, res) => {
     const { jwt: refreshToken } = req.cookies;
+    console.log(refreshToken);
     if (!refreshToken) {
       return res.status(401).send({ error: "Don't have refresh token" });
     }
