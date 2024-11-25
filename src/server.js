@@ -8,7 +8,6 @@ require("dotenv").config();
 const apiRoutes = require("./routes/index");
 const { BASE_IP, port, BASE_URL } = require("./utils/constants");
 
-console.log(BASE_IP, port, BASE_URL);
 const app = express();
 
 app.use(credentials);
